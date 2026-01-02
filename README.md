@@ -100,6 +100,8 @@ forecasts, to understanding the complexities of forecasts’ impacts.
 
 ### 3. Monday Jan 12
 
+- Panel: Early career scientists in Ocean Forecasting
+
 - Lecture: Forecasting Methodologies
 
 - R Tutorial:
