@@ -177,7 +177,7 @@ We need to load the Brickman database, and then filter it for the static variabl
 ```{r mask}
 db = brickman_database() |>
   filter(scenario == "STATIC", var == "mask")
-mask = read_brickman(db, add_depth = FALSE)
+mask = read_brickman(db)
 mask
 ```
 

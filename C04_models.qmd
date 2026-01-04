@@ -198,6 +198,10 @@ In order to figure out the best values to set these parameters to we actually va
 
 Next, we will deploy a function that will take each recipe-model combination and iterator over each of the many-many-many folds (well, 5 in our case) while adjusting the parameters (if any can be adjusted). The results of each iteration will be tracked so we can get a sense of the range and average.  And then we'll run each of those iterations three times and come up with an average for each.  Imagine that this is like a team of minions, each armed with a recipe and model, directing other minions to run the model fitting on each fold.  We are only setting up a grid of 3, which is fine for our class but in practice might be a much higher number.  A systematic and exhaustive "grid" approach works well for small cases, but it can become unwieldy. Other approaches include random sampling and other techniques to lower the computational burden.  Depending upon the number of models and how many hyperparamters there are this step can take a while.
 
+::: {.callout-note appearance="simple"}
+Depending upon your inputs the next step can take a while as each of the hyperparameters are tuned. This is a good time for a stretch break.
+:::
+
 ```{r fit, warning = FALSE}
 wflow <- wflow |>
   workflow_map("tune_grid",
@@ -319,5 +323,5 @@ We have built 4 types of models using tools from the [tidymodels universe](https
 # Coding Assignment
 
 ::: {.callout-note appearance="simple"}
-
+Create a R markdown file, "C04_assignment.Rmd" to create the same models for your second species. Use the R markdown document to show some of the diagnostic metrics as we have shown above. Knit the R markdown to a plain github-ready markdown, commit and push it to your repository.
 :::

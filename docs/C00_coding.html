@@ -345,7 +345,7 @@ Note
         x = sf::st_as_sf(x, coords = c("lon", "lat"), crs = 4326)
     x
 }
-&lt;bytecode: 0x564495dcf1a8&gt;</code></pre>
+&lt;bytecode: 0x55e37b336b30&gt;</code></pre>
 </div>
 </div>
 <p>If that still doesn’t work, we highly recommend trying <a href="https://rseek.org/">Rseek.org</a> which is an R-language specific search engine.</p>
@@ -440,28 +440,26 @@ Geodetic CRS:  WGS 84
 <div class="sourceCode cell-code" id="cb12"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb12-1"><a href="#cb12-1" aria-hidden="true" tabindex="-1"></a>current <span class="ot">=</span> <span class="fu">read_brickman</span>(db)</span>
 <span id="cb12-2"><a href="#cb12-2" aria-hidden="true" tabindex="-1"></a>current</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 <div class="cell-output cell-output-stdout">
-<pre><code>stars object with 3 dimensions and 9 attributes
+<pre><code>stars object with 3 dimensions and 8 attributes
 attribute(s):
-                Min.      1st Qu.        Median          Mean      3rd Qu.
-depth   5.000000e+00 60.258880615 145.012619019 923.313763739 1.704049e+03
-MLD     1.011275e+00  5.583339810  15.967359543  18.910421492 2.809953e+01
-Sbtm    2.324167e+01 32.136343956  34.232215881  33.507147254 3.491243e+01
-SSS     1.644333e+01 30.735633373  31.104771614  31.492407921 3.203519e+01
-SST    -7.826599e-01  6.434107542  12.359498501  12.151707840 1.763068e+01
-Tbtm   -2.676387e-01  3.595118523   6.110801697   6.122372065 7.521761e+00
-U      -2.121380e-01 -0.010892980  -0.002634738  -0.010139401 7.229637e-04
-V      -1.883337e-01 -0.010722862  -0.002858645  -0.008474233 9.565173e-04
-Xbtm    3.275602e-06  0.001458065   0.003088348   0.008360344 7.256525e-03
-               Max.  NA's
-depth  4.964409e+03 59796
-MLD    1.066982e+02 59796
-Sbtm   3.515742e+01 59796
-SSS    3.559161e+01 59796
-SST    2.643147e+01 59796
-Tbtm   2.460999e+01 59796
-U      7.469980e-02 59796
-V      5.264002e-02 59796
-Xbtm   1.899681e-01 59796
+            Min.     1st Qu.       Median         Mean       3rd Qu.
+MLD    1.0112752  5.58333981 15.967359543 18.910421492 28.0995340347
+Sbtm  23.2416668 32.13634396 34.232215881 33.507147254 34.9124307632
+SSS   16.4433327 30.73563337 31.104771614 31.492407921 32.0351924896
+SST   -0.7826599  6.43410754 12.359498501 12.151707840 17.6306777000
+Tbtm  -0.2676387  3.59511852  6.110801697  6.122372065  7.5217612982
+U     -0.2121380 -0.01089298 -0.002634738 -0.010139401  0.0007229637
+V     -0.1883337 -0.01072286 -0.002858645 -0.008474233  0.0009565173
+Xbtm  -5.4847089 -2.83622321 -2.510273823 -2.466750653 -2.1392713259
+              Max.  NA's
+MLD   106.69815063 59796
+Sbtm   35.15741730 59796
+SSS    35.59160995 59796
+SST    26.43147278 59796
+Tbtm   24.60999298 59796
+U       0.07469980 59796
+V       0.05264002 59796
+Xbtm   -0.72131930 59796
 dimension(s):
       from  to offset    delta refsys point      values x/y
 x        1 121 -74.93  0.08226 WGS 84 FALSE        NULL [x]

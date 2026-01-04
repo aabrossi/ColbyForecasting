@@ -305,7 +305,7 @@ Cassandra Clare
 <h2 data-number="2.3" class="anchored" data-anchor-id="identify-the-most-independent-variables-and-the-most-collinear"><span class="header-section-number">2.3</span> Identify the most independent variables (and the most collinear)</h2>
 <p>We have a function that can help use select which variables to remove. <code>filter_collinear()</code> returns a listing of variables it suggests we keep. It attaches to the return value an attribute (like a post-it note stuck on a box) that lists the complementary variables that it suggests we drop. We are choosing a particular method, but you can learn more about using R’s help for <code>?filter_collinear</code>.</p>
 <div class="cell">
-<div class="sourceCode cell-code" id="cb4"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb4-1"><a href="#cb4-1" aria-hidden="true" tabindex="-1"></a>keep <span class="ot">=</span> <span class="fu">filter_collinear</span>(present, <span class="at">method =</span> <span class="st">"cor_caret"</span>)</span>
+<div class="sourceCode cell-code" id="cb4"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb4-1"><a href="#cb4-1" aria-hidden="true" tabindex="-1"></a>keep <span class="ot">=</span> <span class="fu">filter_collinear</span>(present, <span class="at">method =</span> <span class="st">"cor_caret"</span>, <span class="at">cutoff =</span> <span class="fl">0.65</span>)</span>
 <span id="cb4-2"><a href="#cb4-2" aria-hidden="true" tabindex="-1"></a>keep</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 <div class="cell-output cell-output-stdout">
 <pre><code>[1] "SSS"  "U"    "Sbtm" "V"    "Tbtm" "MLD"  "SST" 
@@ -340,17 +340,17 @@ Bounding box:  xmin: -74.72716 ymin: 38.84118 xmax: -65.00391 ymax: 45.1333
 Geodetic CRS:  WGS 84
 # A tibble: 14,521 × 3
    month class                      geom
- * &lt;fct&gt; &lt;fct&gt;               &lt;POINT [°]&gt;
- 1 Jan   presence   (-72.05151 39.07928)
- 2 Jan   presence   (-67.79617 42.75941)
- 3 Jan   presence   (-69.62994 43.65584)
- 4 Jan   presence       (-71.989 39.668)
- 5 Jan   presence         (-71.31 41.49)
- 6 Jan   background (-69.21549 42.25251)
- 7 Jan   background (-67.24116 42.25251)
- 8 Jan   background (-69.95586 43.07515)
- 9 Jan   background (-68.14606 43.48647)
-10 Jan   background (-67.32342 44.06232)
+   &lt;fct&gt; &lt;fct&gt;               &lt;POINT [°]&gt;
+ 1 Jan   presence       (-71.989 39.668)
+ 2 Jan   presence   (-69.62994 43.65584)
+ 3 Jan   presence   (-67.79617 42.75941)
+ 4 Jan   presence         (-71.31 41.49)
+ 5 Jan   presence   (-72.05151 39.07928)
+ 6 Jan   background (-66.50078 42.33478)
+ 7 Jan   background  (-72.5883 40.44271)
+ 8 Jan   background  (-69.21549 41.5944)
+ 9 Jan   background (-72.91736 39.37328)
+10 Jan   background  (-69.05096 39.7846)
 # ℹ 14,511 more rows</code></pre>
 </div>
 </div>
@@ -371,16 +371,16 @@ Geodetic CRS:  WGS 84
 # A tibble: 14,521 × 13
    .id    month class      depth   MLD  Sbtm   SSS   SST  Tbtm        U        V
    &lt;chr&gt;  &lt;fct&gt; &lt;fct&gt;      &lt;dbl&gt; &lt;dbl&gt; &lt;dbl&gt; &lt;dbl&gt; &lt;dbl&gt; &lt;dbl&gt;    &lt;dbl&gt;    &lt;dbl&gt;
- 1 p00001 Jan   presence  2116.   45.9  35.0  33.3 10.9   3.72  7.56e-3 -6.58e-2
- 2 p00002 Jan   presence   192.   34.8  34.7  30.8  3.82  7.55  4.74e-3  1.64e-3
- 3 p00003 Jan   presence    80.6  31.9  32.7  31.4  3.76  5.68 -6.15e-3  3.85e-5
- 4 p00004 Jan   presence   231.   26.6  35.0  32.0  7.58  8.77 -3.48e-3 -4.36e-3
- 5 p00005 Jan   presence    13.6  10.7  30.9  30.8  4.57  4.66 -8.93e-4  2.45e-2
- 6 p00006 Jan   backgrou…  199.   43.4  34.5  31.2  3.93  7.39  2.01e-3  8.20e-4
- 7 p00007 Jan   backgrou…  220.   30.3  34.7  30.9  4.13  7.51  1.18e-2  3.93e-3
- 8 p00008 Jan   backgrou…  149.   46.3  34.1  31.2  3.82  7.09  8.52e-4 -3.67e-3
- 9 p00009 Jan   backgrou…  185.   36.7  34.5  30.9  3.90  7.48 -1.34e-3 -5.38e-3
-10 p00010 Jan   backgrou…  177.   36.1  34.3  30.7  3.99  7.27 -3.99e-3  3.10e-3
+ 1 p00001 Jan   presence   231.   26.6  35.0  32.0  7.58  8.77 -3.48e-3 -4.36e-3
+ 2 p00002 Jan   presence    80.6  31.9  32.7  31.4  3.76  5.68 -6.15e-3  3.85e-5
+ 3 p00003 Jan   presence   192.   34.8  34.7  30.8  3.82  7.55  4.74e-3  1.64e-3
+ 4 p00004 Jan   presence    13.6  10.7  30.9  30.8  4.57  4.66 -8.93e-4  2.45e-2
+ 5 p00005 Jan   presence  2116.   45.9  35.0  33.3 10.9   3.72  7.56e-3 -6.58e-2
+ 6 p00006 Jan   backgrou…  269.   26.1  34.8  30.6  4.15  7.40  1.65e-2  5.86e-3
+ 7 p00007 Jan   backgrou…   45.4  40.8  31.9  31.7  6.35  6.83  6.76e-4  1.83e-3
+ 8 p00008 Jan   backgrou…  155.   44.3  34.1  31.2  4.46  7.12  9.94e-4 -2.15e-3
+ 9 p00009 Jan   backgrou…   70.1  34.0  33.6  31.9  7.44 10.4  -5.24e-3 -1.13e-2
+10 p00010 Jan   backgrou… 1947.   27.1  35.0  32.2  7.95  3.67 -1.42e-1 -4.53e-2
 # ℹ 14,511 more rows
 # ℹ 2 more variables: Xbtm &lt;dbl&gt;, geom &lt;POINT [°]&gt;</code></pre>
 </div>
@@ -400,16 +400,16 @@ Geodetic CRS:  WGS 84
 # A tibble: 14,521 × 12
    month class     depth   MLD  Sbtm   SSS   SST  Tbtm        U        V    Xbtm
    &lt;fct&gt; &lt;fct&gt;     &lt;dbl&gt; &lt;dbl&gt; &lt;dbl&gt; &lt;dbl&gt; &lt;dbl&gt; &lt;dbl&gt;    &lt;dbl&gt;    &lt;dbl&gt;   &lt;dbl&gt;
- 1 Jan   presence 2116.   45.9  35.0  33.3 10.9   3.72  7.56e-3 -6.58e-2 2.82e-2
- 2 Jan   presence  192.   34.8  34.7  30.8  3.82  7.55  4.74e-3  1.64e-3 1.78e-3
- 3 Jan   presence   80.6  31.9  32.7  31.4  3.76  5.68 -6.15e-3  3.85e-5 2.19e-3
- 4 Jan   presence  231.   26.6  35.0  32.0  7.58  8.77 -3.48e-3 -4.36e-3 1.98e-3
- 5 Jan   presence   13.6  10.7  30.9  30.8  4.57  4.66 -8.93e-4  2.45e-2 8.96e-3
- 6 Jan   backgro…  199.   43.4  34.5  31.2  3.93  7.39  2.01e-3  8.20e-4 7.71e-4
- 7 Jan   backgro…  220.   30.3  34.7  30.9  4.13  7.51  1.18e-2  3.93e-3 4.44e-3
- 8 Jan   backgro…  149.   46.3  34.1  31.2  3.82  7.09  8.52e-4 -3.67e-3 1.34e-3
- 9 Jan   backgro…  185.   36.7  34.5  30.9  3.90  7.48 -1.34e-3 -5.38e-3 1.97e-3
-10 Jan   backgro…  177.   36.1  34.3  30.7  3.99  7.27 -3.99e-3  3.10e-3 1.80e-3
+ 1 Jan   presence  231.   26.6  35.0  32.0  7.58  8.77 -3.48e-3 -4.36e-3 1.98e-3
+ 2 Jan   presence   80.6  31.9  32.7  31.4  3.76  5.68 -6.15e-3  3.85e-5 2.19e-3
+ 3 Jan   presence  192.   34.8  34.7  30.8  3.82  7.55  4.74e-3  1.64e-3 1.78e-3
+ 4 Jan   presence   13.6  10.7  30.9  30.8  4.57  4.66 -8.93e-4  2.45e-2 8.96e-3
+ 5 Jan   presence 2116.   45.9  35.0  33.3 10.9   3.72  7.56e-3 -6.58e-2 2.82e-2
+ 6 Jan   backgro…  269.   26.1  34.8  30.6  4.15  7.40  1.65e-2  5.86e-3 6.32e-3
+ 7 Jan   backgro…   45.4  40.8  31.9  31.7  6.35  6.83  6.76e-4  1.83e-3 6.92e-4
+ 8 Jan   backgro…  155.   44.3  34.1  31.2  4.46  7.12  9.94e-4 -2.15e-3 8.39e-4
+ 9 Jan   backgro…   70.1  34.0  33.6  31.9  7.44 10.4  -5.24e-3 -1.13e-2 4.45e-3
+10 Jan   backgro… 1947.   27.1  35.0  32.2  7.95  3.67 -1.42e-1 -4.53e-2 9.49e-2
 # ℹ 14,511 more rows
 # ℹ 1 more variable: geom &lt;POINT [°]&gt;</code></pre>
 </div>
@@ -471,7 +471,7 @@ Geodetic CRS:  WGS 84
 <div class="cell">
 <div class="sourceCode cell-code" id="cb29"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb29-1"><a href="#cb29-1" aria-hidden="true" tabindex="-1"></a><span class="fu">write_model_input</span>(variables, <span class="at">scientificname =</span> <span class="st">"Mola mola"</span>, <span class="at">version =</span> <span class="st">"v1"</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 </div>
-<p>Use the <code>Files</code> pane to navigate to your personal data directory. Open the <code>Aug.yaml</code> file - this is what you configuration looks like in YAML. Fortunately we don’t mess by hand with these much.</p>
+<p>Use the <code>Files</code> pane to navigate to your personal data directory. Open the <code>.yaml</code> file - this is what your configuration looks like in YAML. Fortunately we don’t mess by hand with these much.</p>
 <pre><code>version: v1
 scientificname: Mola mola
 background: mean
@@ -493,6 +493,23 @@ keep_vars:
 </section>
 <section id="coding-assignment-c03" class="level1" data-number="4">
 <h1 data-number="4"><span class="header-section-number">4</span> Coding Assignment C03</h1>
+<div class="callout callout-style-simple callout-note">
+<div class="callout-body d-flex">
+<div class="callout-icon-container">
+<i class="callout-icon"></i>
+</div>
+<div class="callout-body-container">
+<p>Select a second species to download and build both a configuration file and a model input file. Consider a species that is complimentary to your first species. For instance, in our example we selected a grazer of gelatinous creatures for our first species, so we might chose the second species to a type of gelatinous creature. But it should complimentary in other ways, too, such as temporal and spatial extent.</p>
+<p>Record your steps in an R markdown file using the <code>File &gt; New File &gt; R Markdown...</code> menu option. Be sure to select the “GitHub Document (Markdown)” template. This will ensure that your work will render on your github page properly.</p>
+<p><img src="images/github_markdown.png" class="img-fluid" alt="select GitHub Document (Markdown)"> Call the file ‘C03_assignment.Rmd’. Complete the steps necessary to download a species, create a configuration file and a model input file. Since you have a different species name but all of the parameters will be the same, you can continue to use ‘v1’ as the version identifier. At any time you can render the R Markdown to plain vanilla to a plain github-ready markdown text file by selecting the “knit” button.</p>
+<p><img src="images/knit.png" class="img-fluid" alt="the knit button"> &gt; Hint! R markdown files run the directory where they are stored. So, if you save ‘C03_assignment.Rmd’ at the top level of the directory you will be fine. If you save it somewhere else, like <code>assignments</code>, you will have to adjust the path to the setup file when you call <code>source("setup.R")</code> to something that provides the full path. Try this <code>source("/home/&lt;username&gt;/&lt;project_folder&gt;/setup.R")</code>, but, of course, user the proper <code>username</code> and <code>project_folder</code> values.</p>
+<blockquote class="blockquote">
+<p>Another hint! You customized the function <code>read_observations()</code> for your first species. Keep in mind you can always have species specific functions like <code>read_molamola()</code> and <code>read_humpback()</code> if it makes life easier. Your call!</p>
+</blockquote>
+<p>Lastly, commit your work and push the changes to your own github repository.</p>
+</div>
+</div>
+</div>
 
 
 </section>

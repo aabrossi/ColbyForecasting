@@ -47,7 +47,7 @@ In the lower left portion of the plot we see paired scatter plots, at upper righ
 We have a function that can help use select which variables to remove.  `filter_collinear()` returns a listing of variables it suggests we keep. It attaches to the return value an attribute (like a post-it note stuck on a box) that lists the complementary variables that it suggests we drop. We are choosing a particular method, but you can learn more about using R's help for `?filter_collinear`.
 
 ```{r filter_collinear}
-keep = filter_collinear(present, method = "cor_caret")
+keep = filter_collinear(present, method = "cor_caret", cutoff = 0.65)
 keep
 ```
 
@@ -142,7 +142,7 @@ write_model_input(variables, scientificname = "Mola mola", version = "v1")
 ```
 
 
-Use the `Files` pane to navigate to your personal data directory.  Open the `Aug.yaml` file - this is what you configuration looks like in YAML.  Fortunately we don't mess by hand with these much.
+Use the `Files` pane to navigate to your personal data directory.  Open the `.yaml` file - this is what your configuration looks like in YAML.  Fortunately we don't mess by hand with these much.
 
 ```
 version: v1
@@ -167,5 +167,17 @@ We loaded the covariates for the "PRESENT" climate scenario and looked at collin
 # Coding Assignment C03
 
 ::: {.callout-note appearance="simple"}
+Select a second species to download and build both a configuration file and a model input file. Consider a species that is complimentary to your first species. For instance, in our example we selected a grazer of gelatinous creatures for our first species, so we might chose the second species to a type of gelatinous creature. But it should complimentary in other ways, too, such as temporal and spatial extent.   
 
+Record your steps in an R markdown file using the `File > New File > R Markdown...` menu option. Be sure to select the "GitHub Document (Markdown)" template. This will ensure that your work will render on your github page properly.
+
+![select GitHub Document (Markdown)](images/github_markdown.png)
+Call the file 'C03_assignment.Rmd'. Complete the steps necessary to download a species, create a configuration file and a model input file. Since you have a different species name but all of the parameters will be the same, you can continue to use 'v1' as the version identifier.  At any time you can render the R Markdown to plain vanilla to a plain github-ready markdown text file by selecting the "knit" button.
+
+![the knit button](images/knit.png)
+> Hint! R markdown files run the directory where they are stored.  So, if you save 'C03_assignment.Rmd' at the top level of the directory you will be fine.  If you save it somewhere else, like `assignments`, you will have to adjust the path to the setup file when you call `source("setup.R")` to something that provides the full path.  Try this `source("/home/<username>/<project_folder>/setup.R")`, but, of course, user the proper `username` and `project_folder` values.
+
+> Another hint!  You customized the function `read_observations()` for your first species. Keep in mind you can always have species specific functions like `read_molamola()` and `read_humpback()` if it makes life easier.  Your call!
+
+Lastly, commit your work and push the changes to your own github repository. 
 :::

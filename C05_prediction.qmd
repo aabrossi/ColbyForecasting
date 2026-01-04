@@ -94,7 +94,7 @@ Don't forget that [there are other ways](https://github.com/BigelowLab/ColbyFore
 
 ## Save the predictions
 
-It's easy to save the predicitions (and read then back with `read_prediction()`).
+It's easy to save the predictions (and read then back with `read_prediction()`).
 
 ```{r save_pred}
 # make sure the output directory exists
@@ -114,10 +114,12 @@ write_prediction(forecast_2075,
 
 # Recap
 
-We made both a nowcast and a number predictions using a previously saved workflow. Contrary to Yogi Berra's claim, it's actually pretty easy to predict the future.  Perhaps more challenging is to interpret the prediction.  We bundled these together to make time series plots, and we saved the predicted values.
+We made both a nowcast and a predictions using previously saved model fits. Contrary to Yogi Berra's claim, it's actually pretty easy to predict the future.  Perhaps more challenging is to interpret the prediction.  We bundled these together to make time series plots, and we saved the predicted values.
 
 # Coding Assignment
 
 ::: {.callout-note appearance="simple"}
 For each each climate scenario create a monthly forecast (so that's three time periods: PRESENT, 2055 and 2075 and three scenarios CURRENT, RCP45, RCP85) and save each to in your `predictions` directory.  In the end you should have 5 files saved (one for PRESENT and two each for 2055 and 2075).
+
+Do the same for your second species.  Ohhh, perhaps this a good time for another R markdown or R script to keep it all straight?
 :::

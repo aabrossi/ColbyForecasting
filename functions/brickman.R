@@ -86,7 +86,7 @@ read_brickman = function(db = brickman_database() |>
                                          year == "PRESENT",
                                          interval == "mon"), 
                          add = c("none", "depth", "month")[1], 
-                         log_me = c("none", "depth", "Xbtm"),
+                         log_me = c("none", "depth", "Xbtm")[1],
                          path = brickman_path()){
 
   #' Read Brickman data given a database

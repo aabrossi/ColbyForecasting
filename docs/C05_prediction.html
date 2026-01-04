@@ -298,10 +298,10 @@ Yogi Berra
 <pre><code># A tibble: 4 × 7
   wflow_id  splits               id    .metrics .notes   .predictions .workflow 
   &lt;chr&gt;     &lt;list&gt;               &lt;chr&gt; &lt;list&gt;   &lt;list&gt;   &lt;list&gt;       &lt;list&gt;    
-1 default_… &lt;split [11502/3019]&gt; trai… &lt;tibble&gt; &lt;tibble&gt; &lt;tibble&gt;     &lt;workflow&gt;
-2 default_… &lt;split [11502/3019]&gt; trai… &lt;tibble&gt; &lt;tibble&gt; &lt;tibble&gt;     &lt;workflow&gt;
-3 default_… &lt;split [11502/3019]&gt; trai… &lt;tibble&gt; &lt;tibble&gt; &lt;tibble&gt;     &lt;workflow&gt;
-4 default_… &lt;split [11502/3019]&gt; trai… &lt;tibble&gt; &lt;tibble&gt; &lt;tibble&gt;     &lt;workflow&gt;</code></pre>
+1 default_… &lt;split [11230/3291]&gt; trai… &lt;tibble&gt; &lt;tibble&gt; &lt;tibble&gt;     &lt;workflow&gt;
+2 default_… &lt;split [11230/3291]&gt; trai… &lt;tibble&gt; &lt;tibble&gt; &lt;tibble&gt;     &lt;workflow&gt;
+3 default_… &lt;split [11230/3291]&gt; trai… &lt;tibble&gt; &lt;tibble&gt; &lt;tibble&gt;     &lt;workflow&gt;
+4 default_… &lt;split [11230/3291]&gt; trai… &lt;tibble&gt; &lt;tibble&gt; &lt;tibble&gt;     &lt;workflow&gt;</code></pre>
 </div>
 </div>
 </section>
@@ -317,16 +317,16 @@ Yogi Berra
 <div class="cell-output cell-output-stdout">
 <pre><code>stars object with 3 dimensions and 4 attributes
 attribute(s):
-                       Min.    1st Qu.    Median      Mean   3rd Qu.      Max.
-default_glm     0.424614000 0.83599422 0.9412889 0.9040393 0.9877692 0.9999976
-default_rf      0.016261411 0.13162232 0.3023711 0.3022414 0.4573882 0.8679202
-default_btree   0.039512023 0.19561362 0.2489405 0.2653723 0.2870630 0.7822301
-default_maxent  0.000158368 0.05533155 0.4908493 0.4368795 0.7744523 0.9998820
-                 NA's
-default_glm     59796
-default_rf      59796
-default_btree       0
-default_maxent  59796
+                        Min.      1st Qu.       Median        Mean      3rd Qu.
+default_glm     2.220446e-16 2.220446e-16 2.220446e-16 0.000471132 2.220446e-16
+default_rf      1.389655e-03 1.012484e-01 2.678384e-01 0.305168340 4.768624e-01
+default_btree   5.587810e-03 1.122404e-01 1.122404e-01 0.187268805 2.249077e-01
+default_maxent  4.468855e-03 7.133545e-02 3.710900e-01 0.371976974 6.705825e-01
+                     Max.  NA's
+default_glm     0.2751288 59796
+default_rf      0.9150334 59796
+default_btree   0.6669037     0
+default_maxent  0.8744789 59796
 dimension(s):
       from  to offset    delta refsys point      values x/y
 x        1 121 -74.93  0.08226 WGS 84 FALSE        NULL [x]
@@ -377,16 +377,16 @@ month    1  12     NA       NA     NA    NA Jan,...,Dec    </code></pre>
 <div class="cell-output cell-output-stdout">
 <pre><code>stars object with 3 dimensions and 4 attributes
 attribute(s):
-                        Min.   1st Qu.    Median      Mean   3rd Qu.      Max.
-default_glm     0.3948770266 0.8233699 0.9358888 0.8955840 0.9870097 0.9999983
-default_rf      0.0184600302 0.1694870 0.3510561 0.3235017 0.4686817 0.7908156
-default_btree   0.0400852114 0.2489405 0.2489405 0.2744727 0.3159324 0.7780078
-default_maxent  0.0003055521 0.1383747 0.5599727 0.4890094 0.7860154 0.9999572
-                 NA's
-default_glm     59796
-default_rf      59796
-default_btree       0
-default_maxent  59796
+                        Min.      1st Qu.       Median         Mean
+default_glm     2.220446e-16 2.220446e-16 2.220446e-16 0.0004014874
+default_rf      5.175967e-03 1.416608e-01 3.154026e-01 0.3230973382
+default_btree   6.479263e-03 1.122404e-01 1.122404e-01 0.1920485424
+default_maxent  4.829635e-03 1.412765e-01 4.039507e-01 0.4038775395
+                     3rd Qu.      Max.  NA's
+default_glm     2.220446e-16 0.2376674 59796
+default_rf      4.958535e-01 0.9061301 59796
+default_btree   2.385872e-01 0.6728659     0
+default_maxent  6.705062e-01 0.8916939 59796
 dimension(s):
       from  to offset    delta refsys point      values x/y
 x        1 121 -74.93  0.08226 WGS 84 FALSE        NULL [x]
@@ -423,7 +423,7 @@ Note
 </section>
 <section id="save-the-predictions" class="level2" data-number="4.3">
 <h2 data-number="4.3" class="anchored" data-anchor-id="save-the-predictions"><span class="header-section-number">4.3</span> Save the predictions</h2>
-<p>It’s easy to save the predicitions (and read then back with <code>read_prediction()</code>).</p>
+<p>It’s easy to save the predictions (and read then back with <code>read_prediction()</code>).</p>
 <div class="cell">
 <div class="sourceCode cell-code" id="cb15"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb15-1"><a href="#cb15-1" aria-hidden="true" tabindex="-1"></a><span class="co"># make sure the output directory exists</span></span>
 <span id="cb15-2"><a href="#cb15-2" aria-hidden="true" tabindex="-1"></a>path <span class="ot">=</span> <span class="fu">make_path</span>(<span class="st">"predictions"</span>)</span>
@@ -443,7 +443,7 @@ Note
 </section>
 <section id="recap" class="level1" data-number="5">
 <h1 data-number="5"><span class="header-section-number">5</span> Recap</h1>
-<p>We made both a nowcast and a number predictions using a previously saved workflow. Contrary to Yogi Berra’s claim, it’s actually pretty easy to predict the future. Perhaps more challenging is to interpret the prediction. We bundled these together to make time series plots, and we saved the predicted values.</p>
+<p>We made both a nowcast and a predictions using previously saved model fits. Contrary to Yogi Berra’s claim, it’s actually pretty easy to predict the future. Perhaps more challenging is to interpret the prediction. We bundled these together to make time series plots, and we saved the predicted values.</p>
 </section>
 <section id="coding-assignment" class="level1" data-number="6">
 <h1 data-number="6"><span class="header-section-number">6</span> Coding Assignment</h1>
@@ -454,6 +454,7 @@ Note
 </div>
 <div class="callout-body-container">
 <p>For each each climate scenario create a monthly forecast (so that’s three time periods: PRESENT, 2055 and 2075 and three scenarios CURRENT, RCP45, RCP85) and save each to in your <code>predictions</code> directory. In the end you should have 5 files saved (one for PRESENT and two each for 2055 and 2075).</p>
+<p>Do the same for your second species. Ohhh, perhaps this a good time for another R markdown or R script to keep it all straight?</p>
 </div>
 </div>
 </div>
