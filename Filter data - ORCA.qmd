@@ -1,0 +1,19 @@
+```{r}
+orca = fetch_obis(scientificname = "Orcinus orca") |>
+  print()
+summary(orca)
+```
+
+```{r}
+count(orca, basisOfRecord)
+```
+
+```{r}
+count(orca, month)
+```
+```{r}
+orca = orca |>
+  filter(!is.na(eventDate))
+summary(orca)
+```
+
