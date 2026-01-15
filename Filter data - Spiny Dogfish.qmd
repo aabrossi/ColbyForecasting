@@ -1,0 +1,123 @@
+```{r}
+squalus = fetch_obis(scientificname = "Squalus acanthias") |>
+  print()
+summary(squalus)
+```
+
+```{r}
+count(squalus, basisOfRecord)
+```
+
+```{r}
+count(squalus, month)
+```
+```{r}
+squalus = squalus |>
+  filter(!is.na(eventDate))
+summary(squalus)
+```
+
+
+
+```{r}
+human = obs |>
+  filter(basisOfRecord == "HumanObservation") |>
+  slice(1) |>
+  browse_obis()
+```
+
+```{r}
+preserved = obs |>
+  filter(basisOfRecord == "PreservedSpecimen") |>
+  slice(1) |>
+  browse_obis()
+```
+
+```{r}
+checklist = obs |>
+  filter(basisOfRecord == "NomenclaturalChecklist") |>
+  slice(1) |>
+  browse_obis()
+```
+
+```{r}
+occurrence = obs |>
+  filter(basisOfRecord == "Occurrence") |>
+  slice(1) |>
+  browse_obis()
+summary(obs)
+```
+
+```{r}
+obs = obs |>
+  filter(!is.na(eventDate))
+summary(obs)
+```
+```{r}
+obs |>
+  filter(is.na(individualCount)) |>
+  slice(1) |>
+  browse_obis()
+```
+```{r}
+obs = obs |>
+  filter(!is.na(individualCount))
+summary(obs)
+```
+
+```{r}
+ggplot(data = obs,
+       mapping = aes(x = year)) + 
+  geom_bar() + 
+  geom_vline(xintercept = c(1982, 2013), linetype = "dashed") + 
+  labs(title = "Counts per year")
+```
+
+```{r}
+obs = obs |>
+  filter(year >= 1970)
+dim(obs)
+```
+
+```{r}
+ggplot(data = obs,
+       mapping = aes(x = month)) + 
+  geom_bar() + 
+  labs(title = "Counts per month")
+
+```
+```{r}
+obs = obs |>
+  mutate(month = factor(month, levels = month.abb))
+
+ggplot(data = obs,
+       mapping = aes(x = month)) + 
+  geom_bar() + 
+  labs(title = "Counts per month")
+```
+```{r}
+db = brickman_database() |>
+  filter(scenario == "STATIC", var == "mask")
+mask = read_brickman(db)
+mask
+```
+```{r}
+plot(mask, breaks = "equal", axes = TRUE, reset = FALSE)
+plot(st_geometry(obs), pch = ".", add = TRUE)
+```
+```{r}
+hitOrMiss = extract_brickman(mask, obs)
+hitOrMiss
+count(hitOrMiss, value)
+```
+
+```{r}
+dim_start = dim(obs)
+obs = obs |>
+  filter(!is.na(hitOrMiss$value))
+dim_end = dim(obs)
+
+dropped_records = dim_start[1] - dim_end[1]
+dropped_records
+```
+
