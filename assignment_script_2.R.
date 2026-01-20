@@ -108,4 +108,8 @@ write_model_input(obsbkg, scientificname = "Squalus acanthias")
 ```{r}
 x = read_model_input(scientificname = "Squalus acanthias")
 ```
+```{r}
+all_counts = count(st_drop_geometry(obs), month, SST, SSS, Sbtm)
+all_counts
+```
 
