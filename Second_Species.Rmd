@@ -1,0 +1,16 @@
+---
+title: "My SecondSpecies"
+output: github_document
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+```
+
+
+```{r source}
+source("/home/abross28/ColbyForecasting/setup.R")
+x=read_observations()
+x
+```
+

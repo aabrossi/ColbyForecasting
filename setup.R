@@ -1,3 +1,4 @@
+
 #' This file is used to check for needed R packages (from CRAN and github). If the 
 #' packages are installed locally then they are simply loaded. If they are 
 #' not installed then they are installed first and then loaded.
@@ -24,7 +25,7 @@ if ("CRAN" %in% names(packages)){
 }
 
 if ("GITHUB" %in% names(packages)){
-ix = names(packages$GITHUB) %in% installed
+  ix = names(packages$GITHUB) %in% installed
   for(package in names(packages$GITHUB)[!ix]) {
     remotes::install_github(getElement(packages$GITHUB[[package]], "repos"),
                             ref = getElement(packages$GITHUB[[package]], "ref"))
@@ -42,7 +43,7 @@ suppressPackageStartupMessages({
 slice <- dplyr::slice
 
 # Next we check the 'functions' directory for ".R" files and source those
-for (f in list.files("functions", pattern = glob2rx("*.R"), full.names = TRUE)) {
+for (f in list.files("/home/abross28/ColbyForecasting/functions", pattern = glob2rx("*.R"), full.names = TRUE)) {
   source(f, echo = FALSE)
 }
 

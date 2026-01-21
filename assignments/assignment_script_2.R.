@@ -1,3 +1,5 @@
+#Read in the brickman database:
+
 ```{r}
 coast = read_coastline()
 obs = read_observations(scientificname = "Squalus acanthias")
@@ -6,27 +8,32 @@ db = brickman_database() |>
 mask = read_brickman(db)
 ```
 
+
 ```{r}
 LON0 = -67
 LAT0 = 46
-all_counts = count(st_drop_geometry(obs), month) # counting is faster without spatial baggage
+all_counts = count(st_drop_geometry(obs), month, SST, SSS, U) # counting is faster without spatial baggage
 all_counts
 ```
 
+#add other variables 
 
 ```{r}
-ggplot() +
-  geom_sf(data = obs, alpha = 0.2, shape = "circle small", size = 1) +
-  geom_sf(data = coast, col = "orange") +
-  geom_text(data = all_counts,
-            mapping = aes(x = LON0, 
-                          y = LAT0, 
-                          label = sprintf("n: %i", .data$n)),
-                          size = 3) + 
-  labs(x = "Longitude", y = "Latitude", title = "All observations") +
-  facet_wrap(~month)
+all_counts = c("SST", "SSS", "U", all_counts)
 ```
 
+
+
+#sample random background points
+```{r}
+nback_avg = mean(all_counts$n) |>
+  round()
+nback_avg
+```
+
+```{r}
+all_counts
+```
 ```{r}
 thinned_obs = sapply(month.abb,
                function(mon){ 
@@ -52,7 +59,6 @@ ggplot() +
   facet_wrap(~month)
 ```
 
-
 ```{r}
 bias_map = rasterize_point_density(obs, mask) # <-- note the original observations
 
@@ -62,13 +68,6 @@ ggplot() +
   geom_sf(data = coast, col = "orange") + 
   labs(x = "Longitude", y = "Latitude", title = "Bias map using all observations")
 ```
-
-```{r}
-nback_avg = mean(all_counts$n) |>
-  round()
-nback_avg
-```
-
 
 ```{r}
 obsbkg = sapply(month.abb,
@@ -83,29 +82,7 @@ obsbkg = sapply(month.abb,
   bind_rows() |>
   mutate(month = factor(month, levels = month.abb))
 obsbkg 
-```
-
-```{r}
 count(st_drop_geometry(obsbkg), month, class)
 ```
 
-```{r}
-ggplot() +
-  geom_sf(data = obsbkg, 
-          mapping = aes(col = class),
-          alpha =  0.4, shape = "circle small", size = 1) +
-  geom_sf(data = coast, col = "orange")  + 
-  labs(x = "Longitude", y = "Latitude", title = "All") +   
-  theme_bw() +  # <- make a simple white background
-  scale_fill_okabe_ito() +  # <-- colorblind friendly for N Record
-  facet_wrap(~month)
-```
-
-```{r}
-write_model_input(obsbkg, scientificname = "Squalus acanthias")
-```
-
-```{r}
-x = read_model_input(scientificname = "Squalus acanthias")
-```
 
