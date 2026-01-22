@@ -44,7 +44,8 @@ slice <- dplyr::slice
 
 # Next we check the 'functions' directory for ".R" files and source those
 for (f in list.files("/home/abross28/ColbyForecasting/functions", pattern = glob2rx("*.R"), full.names = TRUE)) {
-  source(f, echo = FALSE)
+ #cat(f,"\n")
+   source(f, echo = FALSE)
 }
 
 # Finally set path to the data hopefully as a sibling to the project directory

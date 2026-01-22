@@ -1,5 +1,5 @@
 ---
-title: "My SecondSpecies"
+title: "My SecondSpecies- Smooth Dogfish (Mustelus canis) "
 output: github_document
 ---
 
@@ -7,10 +7,102 @@ output: github_document
 knitr::opts_chunk$set(echo = TRUE)
 ```
 
+#begin with setup 
+```{r}
+source("setup.R")
+```
 
-```{r source}
-source("/home/abross28/ColbyForecasting/setup.R")
-x=read_observations()
-x
+
+#load and filter data for new species 
+```{r}
+squalus = fetch_obis(scientificname = "Mustelus canis") |>
+  print()
+summary(squalus)
+count(squalus, basisOfRecord)
+count(squalus, month)
+squalus = squalus |>
+  filter(!is.na(eventDate))
+summary(squalus)
+human = obs |>
+  filter(basisOfRecord == "HumanObservation") |>
+  slice(1) |>
+  browse_obis()
+preserved = obs |>
+  filter(basisOfRecord == "PreservedSpecimen") |>
+  slice(1) |>
+  browse_obis()
+checklist = obs |>
+  filter(basisOfRecord == "NomenclaturalChecklist") |>
+  slice(1) |>
+  browse_obis()
+occurrence = obs |>
+  filter(basisOfRecord == "Occurrence") |>
+  slice(1) |>
+  browse_obis()
+summary(obs)
+obs = obs |>
+  filter(!is.na(eventDate))
+summary(obs)
+obs |>
+  filter(is.na(individualCount)) |>
+  slice(1) |>
+  browse_obis()
+obs = obs |>
+  filter(!is.na(individualCount))
+summary(obs)
+ggplot(data = obs,
+       mapping = aes(x = year)) + 
+  geom_bar() + 
+  geom_vline(xintercept = c(1982, 2013), linetype = "dashed") + 
+  labs(title = "Counts per year")
+obs = obs |>
+  filter(year >= 1970)
+dim(obs)
+ggplot(data = obs,
+       mapping = aes(x = month)) + 
+  geom_bar() + 
+  labs(title = "Counts per month")
+obs = obs |>
+  mutate(month = factor(month, levels = month.abb))
+
+ggplot(data = obs,
+       mapping = aes(x = month)) + 
+  geom_bar() + 
+  labs(title = "Counts per month")
+db = brickman_database() |>
+  filter(scenario == "STATIC", var == "mask")
+mask = read_brickman(db)
+mask
+plot(mask, breaks = "equal", axes = TRUE, reset = FALSE)
+plot(st_geometry(obs), pch = ".", add = TRUE)
+hitOrMiss = extract_brickman(mask, obs)
+hitOrMiss
+count(hitOrMiss, value)
+dim_start = dim(obs)
+obs = obs |>
+  filter(!is.na(hitOrMiss$value))
+dim_end = dim(obs)
+
+dropped_records = dim_start[1] - dim_end[1]
+dropped_records
+```
+
+#NEED TO CHANGE OBSERVATIONS FUNCTION TO NEW SCIENTIFIC NAME
+
+#load the data from the observations function
+```{r}
+coast = read_coastline()
+obs = read_observations(scientificname = "Mustelus canis")
+db = brickman_database() |>
+  filter(scenario == "STATIC", var == "mask")
+mask = read_brickman(db)
+
+mask = read_brickman(db)
+db_covariates = brickman_database() |>
+  filter(scenario == "PRESENT",
+         interval == "mon",
+         var %in% c("SST", "U", "SSS")
+         )
+covariates <- read_brickman(db_covariates)
 ```
 

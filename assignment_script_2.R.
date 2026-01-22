@@ -1,11 +1,27 @@
+#begin with setup 
+```{r}
+source("setup.R")
+```
+
+
+#load the data from the observations function including the variables being used 
 ```{r}
 coast = read_coastline()
 obs = read_observations(scientificname = "Squalus acanthias")
 db = brickman_database() |>
   filter(scenario == "STATIC", var == "mask")
 mask = read_brickman(db)
+
+mask = read_brickman(db)
+db_covariates = brickman_database() |>
+  filter(scenario == "PRESENT",
+         interval == "mon",
+         var %in% c("SST", "U", "SSS")
+         )
+covariates <- read_brickman(db_covariates)
 ```
 
+#add notation 
 ```{r}
 LON0 = -67
 LAT0 = 46
@@ -14,19 +30,7 @@ all_counts
 ```
 
 
-```{r}
-ggplot() +
-  geom_sf(data = obs, alpha = 0.2, shape = "circle small", size = 1) +
-  geom_sf(data = coast, col = "orange") +
-  geom_text(data = all_counts,
-            mapping = aes(x = LON0, 
-                          y = LAT0, 
-                          label = sprintf("n: %i", .data$n)),
-                          size = 3) + 
-  labs(x = "Longitude", y = "Latitude", title = "All observations") +
-  facet_wrap(~month)
-```
-
+#limit the amount of observations so that there is only one per month 
 ```{r}
 thinned_obs = sapply(month.abb,
                function(mon){ 
@@ -53,6 +57,8 @@ ggplot() +
 ```
 
 
+
+#create a bias map using all data to understand the quantity of total observations in each cell before the data was thinned 
 ```{r}
 bias_map = rasterize_point_density(obs, mask) # <-- note the original observations
 
@@ -63,13 +69,15 @@ ggplot() +
   labs(x = "Longitude", y = "Latitude", title = "Bias map using all observations")
 ```
 
+
+#find average data per month 
 ```{r}
 nback_avg = mean(all_counts$n) |>
   round()
 nback_avg
 ```
 
-
+#randomly select background points using thinned observations and bias map  
 ```{r}
 obsbkg = sapply(month.abb,
     function(mon){ 
@@ -85,10 +93,14 @@ obsbkg = sapply(month.abb,
 obsbkg 
 ```
 
+
+#confirm that the number of points used is the same as the calculated average
 ```{r}
 count(st_drop_geometry(obsbkg), month, class)
 ```
 
+
+#plot the data to understand where the background and presence data points are in realtion to eachother 
 ```{r}
 ggplot() +
   geom_sf(data = obsbkg, 
@@ -101,15 +113,33 @@ ggplot() +
   facet_wrap(~month)
 ```
 
+
+#save the function so that it can be used in the future 
 ```{r}
 write_model_input(obsbkg, scientificname = "Squalus acanthias")
 ```
 
+
+#this function reads model input files 
 ```{r}
 x = read_model_input(scientificname = "Squalus acanthias")
 ```
+
+#create the table with additional variables 
 ```{r}
-all_counts = count(st_drop_geometry(obs), month, SST, SSS, Sbtm)
-all_counts
+result = x |>
+  group_by(month) |>
+  group_map(
+  function(rows, keys){
+    first = slice(rows, 1)
+    last = slice(rows, nrow(rows))
+    r = bind_rows(first, last)
+    cv = slice(covars, "month", rows$month[1])
+    vals = extract_brickman(cv,r, form = "wide") |>
+      select(-.id)
+    return(vals)
+    }, .keep = TRUE
+    ) |>
+  bind_rows()
 ```
 

@@ -1,7 +1,7 @@
 
 read_observations = function(scientificname = "Squalus acanthias",
-                             minimum_year = 1970){
-  
+                             minimum_year = 1970, 
+                             ...){
   
   #' Read raw OBIS data and then filter it
   #' 
@@ -12,22 +12,18 @@ read_observations = function(scientificname = "Squalus acanthias",
   #' @return a filtered table of observations
   
   # Happy coding!
-  DB = brickman_database() |>
-    print()
-# read in the raw data
-x = read_obis(scientificname) |> 
-  dplyr::mutate(month = factor(month, levels = month.abb))
+  
+  # read in the raw data
+  x = read_obis(scientificname, ...) |>
+    dplyr::mutate(month = factor(month, levels = month.abb))
   
   # if the user provided a non-NULL filter by year
   if (!is.null(minimum_year)){
     x = x |>
       filter(year >= minimum_year)
   }
-
-  return(x)
   
-y = read_obis(scientificname) |> dplyr::mutate(SST=SST)
-
+  return(x)
 }
 
 
