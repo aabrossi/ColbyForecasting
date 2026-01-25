@@ -22,7 +22,7 @@ db_covariates = brickman_database() |>
 covariates <- read_brickman(db_covariates)
 ```
 
-#add lables and notation
+#add labels and notation
 
 ```{r}
 LON0 = -67

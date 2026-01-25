@@ -1,0 +1,184 @@
+---
+title: "C04_assignment"
+output: html_document
+---
+
+# Setup 
+
+As always, we start by running our setup function. Start RStudio/R, and reload your project with the menu `File > Recent Projects`. 
+
+```{r setup}
+source("setup.R")
+```
+
+# Load data - choose a month and sampling approach
+
+Let's load what we need to build a model" the configuration and the complete covariate data.  Notice that we (a) transform month to a simple numeric value (it's easier to work with as a number) and (b) select the covariates that are included in our configuration plus "class".
+
+You may also catch that we log scale `depth` and `Xbtm`.  This reduces the numeric range of each to be more comparable to those of the other covariates. This is a common trick when dealing with data that ranges over orders of magnitude compared to companion data.
+
+
+```{r load_data}
+cfg = read_configuration(scientificname = "Mustelus canis", version = "v1")
+model_input = read_model_input(scientificname = "Mustelus canis", 
+                               version = "v1",
+                               log_me = c("depth", "Xbtm")) |>
+  dplyr::mutate(month = month_as_number(.data$month)) |>
+  select(all_of(c("class", cfg$keep)))
+```
+
+# Splitting the data into groups
+
+Here we want to split the data into two groups: data for training the model during creation and data for testing the model after we have created it. We'll aim for 80% of the data to train on and reserving 20% of the data for later testing. 
+
+After that, we want to split the **training** data so that we have groups, or "folds", across the spatial domain. This will look approximately like a checkerboard where we (potentially) have a balance of observations and background represented, but it is possible to have strong imbalance in any of the checkerboard squares. That's OK.
+
+## Initial split into training and testing groups
+
+```{r initial_split}
+model_input_split = spatial_initial_split(model_input, 
+                        prop = 1 / 5,     # 20% for testing
+                        strategy = spatial_block_cv) # see ?spatial_block_cv
+model_input_split
+```
+
+We can see that there are 5 times more points (observations and background) reserved for training.  Now we can look at the spatial distribution of the two groups.
+
+```{r initial_split_plot}
+autoplot(model_input_split)
+```
+
+## Split the training group into regional folds
+
+Next we take just the **training** data and split that into a set cross-validation folds.  We do this to improve our model by making multiple spatially distributed training mini-datasets.
+
+```{r cv_training}
+tr_data = training(model_input_split)
+cv_tr_data <- spatial_block_cv(tr_data,
+  v = 5,     
+  cellsize = grid_cellsize(model_input),
+  offset = grid_offset(model_input) + 0.00001
+)
+autoplot(cv_tr_data)
+```
+
+```{r recipe}
+one_row_of_training_data = dplyr::slice(tr_data,1)
+rec = recipe(one_row_of_training_data, formula = class ~ .)
+rec
+```
+This print out provides a very high level summary - all of the details are glossed over. To get a more detailed summary use the `summary()` function.  Note that the coordinates (longitude and latitude) are detected and labeled as `coords` and not predictors. There are ways around that if you need to use longitude or latitude as predictor variables.
+
+```{r recipe_summary}
+summary(rec)
+```
+
+```{r make_workflow}
+wflow = workflow_set(
+  
+  preproc = list(default = rec), # not much happening in our preprocessor
+  
+  models = list(                 # but we have 4 models to add
+    
+      # very simple - nothing to tune
+      glm = logistic_reg(
+          mode = "classification") |>
+        set_engine("glm"),
+      
+      # two knobs to tune
+      rf = rand_forest(
+          mtry = tune(),
+          trees = tune(),
+          mode = "classification") |>
+        set_engine("ranger", 
+                   importance = "impurity"),
+      
+      # so many things to tune!
+      btree = boost_tree(
+          mtry = tune(), 
+          trees = tune(), 
+          tree_depth = tune(), 
+          learn_rate = tune(), 
+          loss_reduction = tune(), 
+          stop_iter = tune(),
+          mode = "classification") |>
+        set_engine("xgboost"),
+    
+      # just two again
+      maxent = maxent(
+          feature_classes = tune(),
+          regularization_multiplier = tune(),
+          mode = "classification") |>
+        set_engine("maxnet")
+  )
+)
+wflow
+```
+
+
+```{r metrics}
+metrics = sdm_metric_set(yardstick::accuracy)
+metrics
+```
+
+```{r fit, warning = FALSE}
+wflow <- wflow |>
+  workflow_map("tune_grid",
+    resamples = cv_tr_data, 
+    grid = 3,
+    metrics = metrics, 
+    verbose = TRUE)
+```
+Here's a quick plot of the outputs, with each metric being showcased.
+```{r plot_wflow}
+autoplot(wflow)
+```
+
+```{r select_best}
+model_fits = workflowset_selectomatic(wflow, model_input_split,
+                                  filename = "Mustelus_canis-v1-model_fits",
+                                  path = data_path("models"))
+model_fits
+```
+
+```{r model_fit_metrics}
+model_fit_metrics(model_fits)
+```
+
+```{r model_fit_confmat}
+model_fit_confmat(model_fits)
+```
+
+```{r model_fit_roc_auc}
+model_fit_roc_auc(model_fits)
+```
+
+```{r model_fit_vip}
+model_fit_varimp_plot(model_fits)
+```
+
+```{r random_forest}
+rf = model_fits |>
+  filter(wflow_id == "default_rf")
+rf
+```
+
+```{r rf_splits}
+autoplot(rf$splits[[1]])
+```
+
+```{r rf_metrics}
+rf$.metrics[[1]]
+```
+
+```{r rf_preds}
+rf$.predictions[[1]]
+```
+
+```{r rf_workflow}
+rf$.workflow[[1]]
+```
+
+```{r pd_plot}
+model_fit_pdp(model_fits, wid = "default_btree", title = "Boosted Tree")
+```

@@ -87,8 +87,6 @@ dropped_records = dim_start[1] - dim_end[1]
 dropped_records
 ```
 
-#NEED TO CHANGE OBSERVATIONS FUNCTION TO NEW SCIENTIFIC NAME
-
 #load the data from the observations function
 ```{r}
 coast = read_coastline()
@@ -106,3 +104,129 @@ db_covariates = brickman_database() |>
 covariates <- read_brickman(db_covariates)
 ```
 
+#add labels and notation
+
+```{r}
+LON0 = -67
+LAT0 = 46
+all_counts = count(st_drop_geometry(obs), month) # counting is faster without spatial baggage
+all_counts
+```
+
+#limit the amount of observations so that there is only one per month
+
+```{r}
+thinned_obs = sapply(month.abb,
+               function(mon){ 
+                 thin_by_cell(obs |> filter(month == mon), mask)
+               }, simplify = FALSE) |>
+  dplyr::bind_rows() 
+
+# another count
+thinned_counts = count(st_drop_geometry(thinned_obs), month)
+
+ggplot() +
+  geom_sf(data = thinned_obs, 
+          alpha = 0.2, 
+          shape = "circle small", 
+          size = 1) +
+  geom_sf(data = coast, col = "orange") +
+  geom_text(data = thinned_counts,
+            mapping = aes(x = LON0, 
+                          y = LAT0, 
+                          label = sprintf("n: %i", .data$n)),
+                          size = 3) + 
+  labs(x = "Longitude", y = "Latitude", title = "Thinned observations") +
+  facet_wrap(~month)
+```
+
+#create a bias map using all data to understand the quantity of total observations in each cell before the data was thinned
+
+```{r}
+bias_map = rasterize_point_density(obs, mask) # <-- note the original observations
+
+ggplot() +
+  geom_stars(data = bias_map, aes(fill = count)) +
+  scale_fill_viridis_b(na.value = "transparent") +
+  geom_sf(data = coast, col = "orange") + 
+  labs(x = "Longitude", y = "Latitude", title = "Bias map using all observations")
+```
+
+#average data per month
+
+```{r}
+nback_avg = mean(all_counts$n) |>
+  round()
+nback_avg
+```
+
+#randomly select background points using thinned observations and bias map
+
+```{r}
+obsbkg = sapply(month.abb,
+    function(mon){ 
+      sample_background(thinned_obs |> filter(month == mon), # <- just this month
+                       bias_map,
+                       method = "bias",  # <-- it needs to know it's a bias map
+                       return_pres = TRUE, # <-- give me the obs back, too
+                       n = nback_avg) |>   # <-- how many points
+        mutate(month = mon, .before = 1)
+    }, simplify = FALSE) |>
+  bind_rows() |>
+  mutate(month = factor(month, levels = month.abb))
+obsbkg 
+```
+
+#confirm that the number of points used is the same as the calculated average
+```{r}
+count(st_drop_geometry(obsbkg), month, class)
+```
+
+#plot the data to understand where the background and presence data points are in realtion to eachother
+
+```{r}
+ggplot() +
+  geom_sf(data = obsbkg, 
+          mapping = aes(col = class),
+          alpha =  0.4, shape = "circle small", size = 1) +
+  geom_sf(data = coast, col = "orange")  + 
+  labs(x = "Longitude", y = "Latitude", title = "All") +   
+  theme_bw() +  # <- make a simple white background
+  scale_fill_okabe_ito() +  # <-- colorblind friendly for N Record
+  facet_wrap(~month)
+```
+
+#save the function so that it can be used in the future
+
+```{r}
+write_model_input(obsbkg, scientificname = "Mustelus canis")
+```
+
+#this function reads model input files
+
+```{r}
+x = read_model_input(scientificname = "Mustelus canis")
+```
+
+#create table with new data points and multiple variables
+
+```{r}
+result = x |>
+  
+  group_by(month) |>
+  group_map(function(rows, key) {
+  
+    rows_sf = sf::st_as_sf(rows, coords = c("lon", "lat"), crs = 4326)
+
+    cv_metadata = db_covariates |> filter(var %in% c("SST", "SSS", "U"))
+    cv_spatial = read_brickman(cv_metadata) 
+    
+    vals = extract_brickman(cv_spatial, rows_sf, form = "wide") |> 
+      select(-.id)
+    
+    return(vals)
+  }, .keep = TRUE) |> 
+  bind_rows()
+  
+print(result)
+```
