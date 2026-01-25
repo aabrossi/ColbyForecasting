@@ -127,23 +127,27 @@ write_model_input(obsbkg, scientificname = "Squalus acanthias")
 x = read_model_input(scientificname = "Squalus acanthias")
 ```
 
-#create table with new data points - still working on this #not working because:![](Screenshot 2026-01-21 205707.png)
+#create table with new data points and multiple variables
 
 ```{r}
 result = x |>
+  
   group_by(month) |>
-  group_map(
-    function(rows,key){
-      first = slice(rows,1)
-      last= slice(rows, nrow(rows))
-      r = bind_rows(first, last)
-      cv= slice(db, "SST", "SSS")
-      vals= extract_brickman(cv, r, form = "wide") |>
-        select(-.id)
-      return(vals)
-    }, .keep = TRUE
-  ) |>
+  group_map(function(rows, key) {
+  
+    rows_sf = sf::st_as_sf(rows, coords = c("lon", "lat"), crs = 4326)
+
+    cv_metadata = db_covariates |> filter(var %in% c("SST", "SSS", "U"))
+    cv_spatial = read_brickman(cv_metadata) 
+    
+    vals = extract_brickman(cv_spatial, rows_sf, form = "wide") |> 
+      select(-.id)
+    
+    return(vals)
+  }, .keep = TRUE) |> 
   bind_rows()
   
 print(result)
 ```
+
+
