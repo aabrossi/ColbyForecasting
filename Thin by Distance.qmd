@@ -1,0 +1,82 @@
+---
+title: "Thin by Distance"
+format: html
+---
+# Setup
+
+As always, we start by running our setup function. Start RStudio/R, and relaod your project with the menu `File > Recent Projects`.
+
+```{r setup}
+source("setup.R")
+```
+
+We also will need the Brickman mask and the observation data. Note that we are making a model that works for every month, so we shall select background points by month. Given what we have learned about the distribution of observations over the months of year this may be surprising; some months have many more observations than other months. Won't months with more data be "better informed" than months with fewer data? That is possible, but we have to start somewhere so we'll be choosing a set number of background points for each month that balances the observations and background throughout the year rather than per month.
+
+OK - load the data we need.
+
+```{r load_obs_mask}
+coast = read_coastline()
+obs = read_observations(scientificname = "Squalus acanthias")
+db = brickman_database() |>
+  filter(scenario == "STATIC", var == "mask")
+mask = read_brickman(db)
+```
+
+Let's start with a simple plot of the observations per month. We'll make an array of maps with one constructed per month. We'll use the [ggplot2 plotting system](https://ggplot2.tidyverse.org/) which is a powerful system for layering components of a plot.
+
+We will want to add a notation to each plot showing the number of points that month. To make that table we use the `count()` function from the [dplyr R package](https://dplyr.tidyverse.org/). We also found the best location to print the count (through trial and error) so we define that, too.
+
+```{r all_observations_count}
+LON0 = -67
+LAT0 = 46
+all_counts = count(st_drop_geometry(obs), month) # counting is faster without spatial baggage
+all_counts
+```
+
+Now we can construct the plot. Note that layering of data, then the coast then the extra text. Also, we use alpha (aka 'transparency' or 'opacity') blending to make the plotting symbols slightly transparent which reveals overlapping points nicely.
+
+```{r all_observations}
+ggplot() +
+  geom_sf(data = obs, alpha = 0.2, shape = "circle small", size = 1) +
+  geom_sf(data = coast, col = "orange") +
+  geom_text(data = all_counts,
+            mapping = aes(x = LON0, 
+                          y = LAT0, 
+                          label = sprintf("n: %i", .data$n)),
+                          size = 3) + 
+  labs(x = "Longitude", y = "Latitude", title = "All observations") +
+  facet_wrap(~month)
+```
+
+Thin by distance
+```{r}
+library(sf)
+library(terra)
+
+
+template_raster <- rast(obs, res = 0.1)
+
+# 2. Thin the points
+# This keeps exactly one random point per cell
+thinned_obs = thin_points <- spatSample(vect(obs), 
+                           method = "random", 
+                           strata = template_raster, 
+                           size = 1)
+
+# 3. Convert back to a regular data frame or sf object for your next steps
+thin_points_sf <- st_as_sf(thin_points)
+
+# 4. Check the count
+nrow(thin_points_sf)
+```
+
+```{r}
+ggplot() +
+  # The '+' must stay at the end of the line
+  geom_sf(data = thin_points_sf, alpha = 0.5, color = "blue") + 
+  geom_sf(data = coast, col = "orange") +
+  labs(title = "Thinned Observations") +
+  facet_wrap(~month)
+```
+
+

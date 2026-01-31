@@ -52,7 +52,7 @@ After that, we want to split the **training** data so that we have groups, or "f
 
 ```{r initial_split}
 model_input_split = spatial_initial_split(model_input, 
-                        prop = 1 / 5,     # 20% for testing
+                        prop = 1/5,     # 20% for testing
                         strategy = spatial_block_cv) # see ?spatial_block_cv
 model_input_split
 ```
@@ -313,7 +313,7 @@ rf$.workflow[[1]]
 
 Partial dependence reflects the relative contribution of each variable influence over it's full range of values.  The output is a grid grid of plots showing the relative distribution of the variable (bars) as well as the relative influence of the variable (line). 
 ```{r pd_plot}
-model_fit_pdp(model_fits, wid = "default_btree", title = "Boosted Tree")
+model_fit_pdp(model_fits, wid = "default_maxent", title = "Maxium Entropy")
 ```
 
 # Recap

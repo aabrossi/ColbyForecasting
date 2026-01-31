@@ -130,7 +130,7 @@ We know that the "current" climate scenario for the Brickman model data define "
 ggplot(data = obs,
        mapping = aes(x = year)) + 
   geom_bar() + 
-  geom_vline(xintercept = c(1982, 2013), linetype = "dashed") + 
+  geom_vline(xintercept = c(1970, 2025), linetype = "dashed") + 
   labs(title = "Counts per year")
 ```
 For this species, it seem like it is only the record from 1932 that might be a stretch, so let's filter that out by rejecting records before 1970. This time, instead of asking for a sumamry, we'll print the dimensions (rows, columns) of the table.
